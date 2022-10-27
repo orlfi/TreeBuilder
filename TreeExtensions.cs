@@ -1,5 +1,4 @@
-
-namespace SqlClient;
+namespace TreeBuilder;
 
 public static class TreeExtensions
 {
@@ -7,20 +6,20 @@ public static class TreeExtensions
     {
         if (nodes == null) throw new ArgumentNullException("nodes");
 
-        if (nodes.Any(n => n.ParentId is not null)) throw new ArgumentNullException("Root nodes not found");
+        if (!nodes.Any(n => n.ParentId is null)) throw new ArgumentNullException("Root nodes not found");
 
-        if (nodes.SingleOrDefault(n => n.ParentId is null) is { } root)
+        if (nodes.Count(n => n.ParentId is null) > 1)
         {
-            nodes.Remove(root);
-            return root.BuildTree(nodes);
+            var newRoot = new TreeNode() { Name = "All" };
+            
+            foreach (var item in nodes.Where(n => n.ParentId is null))
+                item.ParentId = newRoot.Id;
+
+            return newRoot.BuildTree(nodes);
         }
 
-        root = new TreeNode();
-        foreach (var item in nodes.Where(n => n.ParentId is not null))
-        {
-            item.ParentId = root.Id;
-        }
-
+        var root = nodes.Single(n => n.ParentId is null);
+        nodes.Remove(root);
         return root.BuildTree(nodes);
     }
 

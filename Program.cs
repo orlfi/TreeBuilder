@@ -1,13 +1,11 @@
-﻿// See https://aka.ms/new-console-template for more information
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using SqlClient;
+﻿using TreeBuilder;
 
 var list = FillTree();
-foreach (var item in list)
-    Console.WriteLine(item.ToString());
 
 var root = list.BuildTree();
-Console.WriteLine("ok");
+root.Visit((node, prefix) => Console.WriteLine(prefix + node.Name), "");
+Console.WriteLine("\r\nOk. Press any key...");
+Console.ReadKey();
 
 static List<TreeNode> FillTree()
 {
@@ -15,7 +13,6 @@ static List<TreeNode> FillTree()
 
     var root = new TreeNode { Id = Guid.NewGuid(), Name = "Меню", ParentId = null };
     tree.Add(root);
-
     var file = new TreeNode { Id = Guid.NewGuid(), Name = "File", ParentId = root.Id };
     tree.Add(file);
     var open = new TreeNode { Id = Guid.NewGuid(), Name = "Open", ParentId = file.Id };
@@ -30,5 +27,8 @@ static List<TreeNode> FillTree()
     tree.Add(copy);
     var paste = new TreeNode { Id = Guid.NewGuid(), Name = "Paste", ParentId = edit.Id };
     tree.Add(paste);
+
+    var root2 = new TreeNode { Id = Guid.NewGuid(), Name = "Меню2", ParentId = null };
+    tree.Add(root2);
     return tree;
 }
